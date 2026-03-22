@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="auth-container" style="max-width: 800px;">
+        <h2>Student Dashboard</h2>
+        <p style="text-align: center;">Welcome, <strong>{{ request.user.username }}</strong>!</p>
+        
+        <hr style="border: 1px solid #eee; margin: 20px 0;">
+
+        <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 30px;">
+            <a href="{% url 'create_complaint' %}" class="submit-btn" style="text-align: center; text-decoration: none; flex: 1;">File a Complaint</a>
+            <a href="{% url 'my_complaints' %}" class="submit-btn" style="text-align: center; text-decoration: none; flex: 1;">My Complaints</a>
+           
+
+<a href="/logout/" class="submit-btn" style="text-align: center; text-decoration: none; width: 45%; background: #d9534f;">Logout</a>
+    </div>
+</body>
+</html>

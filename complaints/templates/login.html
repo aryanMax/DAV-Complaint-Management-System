@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DAV College Complaint Management - Login</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>System Login</h2>
+        <div class="toggle-container">
+            <button id="student-btn" class="toggle-btn active" onclick="switchTab('student')">Student</button>
+            <button id="admin-btn" class="toggle-btn" onclick="switchTab('admin')">Admin</button>
+        </div>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <input type="hidden" id="login_type" name="login_type" value="student">
+            
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+        <p class="signup-link" id="signup-prompt">Don't have an account? <a href="{% url 'signup' %}">Sign Up Here</a></p>
+    </div>
+
+    <script>
+        function switchTab(role) {
+            document.getElementById('login_type').value = role;
+            
+            // UI Toggle
+            document.getElementById('student-btn').classList.remove('active');
+            document.getElementById('admin-btn').classList.remove('active');
+            document.getElementById(role + '-btn').classList.add('active');
+
+            // Hide signup prompt if admin is selected
+            const signupPrompt = document.getElementById('signup-prompt');
+            if(role === 'admin') {
+                signupPrompt.style.display = 'none';
+            } else {
+                signupPrompt.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

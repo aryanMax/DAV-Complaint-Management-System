@@ -1,0 +1,20 @@
+{% extends "complaints/base.html" %}
+
+{% block content %}
+<h1>My Complaints</h1>
+
+<div class="stats-grid">
+{% for complaint in complaints %}
+  <div class="stat-card">
+    <h3>{{ complaint.title }}</h3>
+    <p class="status" data-status="{{ complaint.status }}">
+  {{ complaint.status }}
+</p>
+
+    <p>Category: {{ complaint.category }}</p>
+  </div>
+{% empty %}
+  <p>No complaints found.</p>
+{% endfor %}
+</div>
+{% endblock %}
