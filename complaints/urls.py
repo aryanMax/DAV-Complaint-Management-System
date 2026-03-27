@@ -12,7 +12,8 @@ urlpatterns = [
     path('create/', views.create_complaint_view, name='create_complaint'),
     path('my/', views.my_complaints_view, name='my_complaints'),
     path('all/', views.all_complaints_view, name='all_complaints'),
-    
+    # View specific complaint details
+    path('view/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),
     # This URL passes the specific complaint ID to the view
     path('update/<int:complaint_id>/', views.update_status, name='update_status'),
 ]

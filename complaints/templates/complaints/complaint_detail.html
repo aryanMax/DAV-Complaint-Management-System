@@ -1,0 +1,33 @@
+{% extends 'complaints/base.html' %}
+
+{% block title %}Complaint Details{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.06);">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 20px;">
+        <div>
+            <h2 style="margin: 0 0 10px 0; color: #0f172a;">{{ complaint.title }}</h2>
+            <p style="margin: 0; color: #64748b; font-size: 14px;">
+                Submitted by <strong>{{ complaint.created_by.username }}</strong> on {{ complaint.created_at|date:"F j, Y, g:i a" }}
+            </p>
+        </div>
+        <span class="status" data-status="{{ complaint.status }}" style="font-size: 16px;">{{ complaint.status }}</span>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+        <h4 style="color: #475569; margin-bottom: 10px;">Category: <span style="font-weight: normal; color: #0f172a;">{{ complaint.category }}</span></h4>
+        <h4 style="color: #475569; margin-bottom: 10px;">Description:</h4>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; color: #334155; line-height: 1.6; white-space: pre-wrap;">{{ complaint.description }}</div>
+    </div>
+
+    <div style="display: flex; gap: 15px;">
+        {% if request.user.is_staff %}
+            <a href="{% url 'update_status' complaint.id %}" class="action-btn" style="background: #d97706; border: none;">Update Status</a>
+            <a href="{% url 'all_complaints' %}" class="action-btn" style="background: #64748b;">Back to List</a>
+        {% else %}
+            <a href="{% url 'my_complaints' %}" class="action-btn" style="background: #64748b;">Back to My Complaints</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
