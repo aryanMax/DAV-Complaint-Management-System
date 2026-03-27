@@ -1,25 +1,27 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="auth-container" style="max-width: 800px;">
-        <h2>DAV College Admin Portal</h2>
-        <p style="text-align: center;">Welcome back, <strong>{{ request.user.username }}</strong>! You are logged in as an Administrator.</p>
-        
-        <hr style="border: 1px solid #eee; margin: 20px 0;">
+{% extends "complaints/base.html" %}
 
-        <div style="display: flex; justify-content: space-around; margin-top: 30px;">
-            <a href="{% url 'all_complaints' %}" class="submit-btn" style="text-align: center; text-decoration: none; width: 45%;">View All Complaints</a>
-            
-    
+{% block title %}Admin Dashboard{% endblock %}
 
-<a href="/logout/" class="submit-btn" style="text-align: center; text-decoration: none; width: 45%; background: #d9534f;">Logout</a>
+{% block content %}
+    <h2 style="color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Admin Dashboard</h2>
+    <p>Welcome back, Administrator! Here is the current status of all college complaints.</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Complaints</h3>
+            <div class="stat-number">{{ total }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Action</h3>
+            <div class="stat-number" style="color: #d97706;">{{ pending }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Resolved</h3>
+            <div class="stat-number" style="color: #16a34a;">{{ resolved }}</div>
         </div>
     </div>
-</body>
-</html>
+
+    <div style="text-align: center;">
+        <a href="{% url 'all_complaints' %}" class="action-btn">Review All Complaints</a>
+    </div>
+{% endblock %}
