@@ -1,96 +1,24 @@
-# Update this line at the top of views.py
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Complaint
-from .forms import ComplaintForm
-from django.http import HttpResponseForbidden
-from django.shortcuts import render
-
-
-
-@login_required
-def dashboard(request):
-    complaints = Complaint.objects.filter(created_by=request.user)
-
-    context = {
-        'total': complaints.count(),
-        'pending': complaints.filter(status='PENDING').count(),
-        'resolved': complaints.filter(status='RESOLVED').count(),
-    }
-
-    return render(request, 'complaints/dashboard.html', context)
-
-
-
-
-@login_required
-def create_complaint(request):
-    if request.method == 'POST':
-        form = ComplaintForm(request.POST)
-        if form.is_valid():
-            complaint = form.save(commit=False)
-            complaint.created_by = request.user
-            complaint.save()
-            return redirect('/')
-
-    else:
-        form = ComplaintForm()
-
-    return render(request, 'complaints/create_complaint.html', {'form': form})
-
-
-@login_required
-def my_complaints(request):
-    complaints = Complaint.objects.filter(created_by=request.user)
-    return render(request, 'complaints/my_complaints.html', {'complaints': complaints})
-
-
-@login_required
-def all_complaints(request):
-    if request.user.profile.role != 'ADMIN':
-        return HttpResponseForbidden("You are not authorized to view this page.")
-
-    complaints = Complaint.objects.all()
-    return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
-
-
-@login_required
-def update_status(request, complaint_id):
-    if request.user.profile.role != 'ADMIN':
-        return HttpResponseForbidden("You are not authorized to update complaints.")
-
-    complaint = Complaint.objects.get(id=complaint_id)
-
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        complaint.status = new_status
-        complaint.save()
-        return redirect('all_complaints')
-
-    return render(request, 'complaints/update_status.html', {'complaint': complaint})
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-# If you created the StudentSignUpForm in forms.py, import it:
-# from .forms import StudentSignUpForm 
+from django.http import HttpResponseForbidden
 
-# --- Add these two functions to the bottom of complaints/views.py ---
+# Import your models and forms
+from .models import Complaint
+from .forms import ComplaintForm, StudentSignUpForm
+
+# ==========================================
+# AUTHENTICATION VIEWS
+# ==========================================
 
 def signup_view(request):
-    # Note: If you haven't made forms.py yet, you can temporarily use UserCreationForm here
-    # form = UserCreationForm(request.POST or None)
-    from .forms import StudentSignUpForm 
-    
     if request.method == 'POST':
         form = StudentSignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('dashboard') # Make sure this matches your dashboard URL name
+            return redirect('dashboard') 
     else:
         form = StudentSignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -104,12 +32,13 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
+            # Check if the selected role matches their actual staff status
             if login_type == 'admin' and user.is_staff:
                 login(request, user)
-                return redirect('dashboard') # Admin dashboard URL
+                return redirect('dashboard')
             elif login_type == 'student' and not user.is_staff:
                 login(request, user)
-                return redirect('dashboard') # Student dashboard URL
+                return redirect('dashboard')
             else:
                 messages.error(request, "Invalid role for this account.")
         else:
@@ -117,31 +46,72 @@ def login_view(request):
             
     return render(request, 'login.html')
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
-# --- Add these to the bottom of complaints/views.py ---
+
+# ==========================================
+# DASHBOARD & COMPLAINT VIEWS
+# ==========================================
 
 @login_required
 def dashboard_view(request):
-    # This checks if the logged-in user is an admin or a student 
-    # and sends them to the correct dashboard template
+    # Route admins and students to their respective templates
+    # and fetch the correct complaints for the stats counters
     if request.user.is_staff:
-        return render(request, 'admin_dashboard.html')
+        complaints = Complaint.objects.all()
+        template_name = 'admin_dashboard.html'
     else:
-        return render(request, 'student_dashboard.html')
+        complaints = Complaint.objects.filter(created_by=request.user)
+        template_name = 'student_dashboard.html'
+
+    context = {
+        'total': complaints.count(),
+        'pending': complaints.filter(status='PENDING').count(),
+        'resolved': complaints.filter(status='RESOLVED').count(),
+    }
+    return render(request, template_name, context)
 
 @login_required
 def create_complaint_view(request):
-    return render(request, 'create_complaint.html')
+    if request.method == 'POST':
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaint = form.save(commit=False)
+            complaint.created_by = request.user
+            complaint.save()
+            return redirect('dashboard')
+    else:
+        form = ComplaintForm()
+    return render(request, 'complaints/create_complaint.html', {'form': form})
 
 @login_required
 def my_complaints_view(request):
-    return render(request, 'my_complaints.html')
+    complaints = Complaint.objects.filter(created_by=request.user)
+    return render(request, 'complaints/my_complaints.html', {'complaints': complaints})
 
 @login_required
 def all_complaints_view(request):
-    return render(request, 'all_complaints.html')
-def logout_view(request):
-    logout(request) # This destroys the user's session safely
-    return redirect('login') # Sends them right back to the login screen
+    # Security check: Only admins can view all complaints
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
+        
+    complaints = Complaint.objects.all()
+    return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
+
+@login_required
+def update_status(request, complaint_id):
+    # Security check: Only admins can update statuses
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to update complaints.")
+        
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        complaint.status = new_status
+        complaint.save()
+        return redirect('all_complaints')
+
+    return render(request, 'complaints/update_status.html', {'complaint': complaint})
