@@ -115,3 +115,13 @@ def update_status(request, complaint_id):
         return redirect('all_complaints')
 
     return render(request, 'complaints/update_status.html', {'complaint': complaint})
+    @login_required
+def complaint_detail(request, complaint_id):
+    # Fetch the complaint or return a 404 error if it doesn't exist
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    
+    # Security: Only admins and the student who created it can view the details
+    if not request.user.is_staff and complaint.created_by != request.user:
+        return HttpResponseForbidden("You are not authorized to view this complaint.")
+        
+    return render(request, 'complaints/complaint_detail.html', {'complaint': complaint})
