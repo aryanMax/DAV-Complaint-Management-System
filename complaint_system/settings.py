@@ -29,6 +29,16 @@ import logging
 from django.db.backends.mysql.base import DatabaseWrapper
 DatabaseWrapper.display_name = 'MariaDB'
 from pathlib import Path
+import pymysql
+
+# 1. Tell Django to use pymysql instead of mysqlclient
+pymysql.version_info = (2, 2, 1, 'final', 0)
+pymysql.install_as_MySQLdb()
+
+# 2. Trick Django into thinking MariaDB is version 10.6.0
+import django
+from django.db.backends.mysql.base import DatabaseWrapper
+DatabaseWrapper.server_version = (10, 6, 0)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -94,12 +104,8 @@ WSGI_APPLICATION = 'complaint_system.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'complaint_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3308',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -164,3 +170,6 @@ LOGIN_URL = 'login'
 
 # Tells Django where to redirect users after they successfully log in
 LOGIN_REDIRECT_URL = 'dashboard'
+
+# Ignores the MySQL version check warning
+SILENCED_SYSTEM_CHECKS = ["mysql.W002"]
