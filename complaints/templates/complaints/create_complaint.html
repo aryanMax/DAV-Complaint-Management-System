@@ -1,40 +1,55 @@
 {% extends "complaints/base.html" %}
+
+{% block title %}File a Complaint{% endblock %}
+
 {% block content %}
+<div style="display: flex; gap: 30px; align-items: flex-start; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
 
-<div class="page">
-  <div class="card">
+    <div style="background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); flex: 1; min-width: 320px; max-width: 600px;">
+        <h2 style="color: #0f172a; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;">File a New Complaint</h2>
+        <p style="color: #64748b; margin-bottom: 25px;">Please fill out the details below. The DAV College administration will review your issue shortly.</p>
 
-    <h2>Create Complaint</h2>
-    <p class="muted">
-      Clearly describe your issue so the administration can act faster.
-    </p>
+        <form method="post">
+            {% csrf_token %}
 
-    <form method="post">
-      {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 8px;">Complaint Title</label>
+                {{ form.title }}
+            </div>
 
-      <div class="form-group">
-        <label>Title</label>
-        {{ form.title }}
-      </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 8px;">Category</label>
+                {{ form.category }}
+            </div>
 
-      <div class="form-group">
-        <label>Description</label>
-        {{ form.description }}
-      </div>
+            <div style="margin-bottom: 30px;">
+                <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 8px;">Description</label>
+                {{ form.description }}
+            </div>
 
-      <div class="form-group">
-        <label>Category</label>
-        {{ form.category }}
-      </div>
+            <div style="display: flex; gap: 15px;">
+                <button type="submit" class="action-btn" style="flex: 1; border: none; font-size: 16px; cursor: pointer;">Submit Complaint</button>
+                <a href="{% url 'dashboard' %}" class="action-btn" style="flex: 1; text-align: center; background: #64748b;">Cancel</a>
+            </div>
+        </form>
+    </div>
 
-      <div class="actions">
-        <button class="btn primary">Submit Complaint</button>
-        <a href="{% url 'dashboard' %}" class="btn secondary">Back to Dashboard</a>
-      </div>
+    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); flex: 1; min-width: 300px; max-width: 400px;">
+        <h3 style="color: #0f172a; margin-top: 0; display: flex; align-items: center; gap: 10px;">
+            <span>📝</span> Submission Guidelines
+        </h3>
+        <ul style="color: #475569; line-height: 1.8; padding-left: 20px; margin-bottom: 25px;">
+            <li><strong>Be Specific:</strong> Include exact locations (e.g., Room 204, Science Block) or relevant department names.</li>
+            <li><strong>Stay Professional:</strong> Maintain a polite and respectful tone to ensure prompt assistance from staff.</li>
+            <li><strong>Categorize Correctly:</strong> Choosing the right category ensures your issue is instantly routed to the correct DAV College department.</li>
+            <li><strong>Track Progress:</strong> You can monitor real-time updates on your issue in the "My Complaints" tab.</li>
+        </ul>
+        
+        <div style="padding: 15px; background: #e0f2fe; border-left: 4px solid #0284c7; border-radius: 4px; color: #0369a1; font-size: 14px;">
+            <strong>🚨 Emergency?</strong><br> 
+            If this is an urgent campus safety or medical issue, do not use this form. Please contact DAV College Campus Security immediately.
+        </div>
+    </div>
 
-    </form>
-
-  </div>
 </div>
-
 {% endblock %}
