@@ -115,7 +115,8 @@ def update_status(request, complaint_id):
         return redirect('all_complaints')
 
     return render(request, 'complaints/update_status.html', {'complaint': complaint})
-    @login_required
+
+@login_required
 def complaint_detail(request, complaint_id):
     # Fetch the complaint or return a 404 error if it doesn't exist
     complaint = get_object_or_404(Complaint, id=complaint_id)
