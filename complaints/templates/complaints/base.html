@@ -2,154 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Complaint System</title>
-
-
-
+    <title>{% block title %}Complaint System{% endblock %}</title>
     <style>
-        .status {
-  padding: 6px 12px;
-  border-radius: 20px;
-  display: inline-block;
-  font-weight: 600;
-}
+        /* Status Badges */
+        .status { padding: 6px 12px; border-radius: 20px; display: inline-block; font-weight: 600; font-size: 14px; }
+        .status.PENDING { background: #fde68a; color: #92400e; }
+        .status.IN_PROGRESS { background: #bfdbfe; color: #1e40af; }
+        .status.RESOLVED { background: #bbf7d0; color: #166534; }
 
-.status.PENDING { background: #fde68a; }
-.status.IN_PROGRESS { background: #bfdbfe; }
-.status.RESOLVED { background: #bbf7d0; }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
-        }
+        body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #f5f7fb; color: #222; }
 
         /* Navbar */
-        .navbar {
-            background: linear-gradient(90deg, #0f172a, #1e293b);
-            padding: 14px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-        }
+        .navbar { background: linear-gradient(90deg, #0f172a, #1e293b); padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+        .navbar a { color: #cbd5f5; margin-right: 20px; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .navbar a:hover { color: #fff; }
+        .nav-left { display: flex; align-items: center; }
+        .nav-title { font-size: 20px; font-weight: 600; margin-right: 30px; }
+        .logout-btn { background: transparent; color: #cbd5f5; border: 1px solid #cbd5f5; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { background: #d9534f; color: white; border-color: #d9534f; }
 
-        .navbar a {
-            color: #cbd5f5;
-            margin-right: 20px;
-            text-decoration: none;
-            font-weight: 500;
-        }
+        /* Layout */
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
 
-        .navbar a:hover {
-            color: #fff;
-        }
+        /* Dashboard Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 30px; margin-bottom: 40px; }
+        .stat-card { background: #fff; padding: 24px; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); transition: transform 0.25s ease, box-shadow 0.25s ease; text-align: center; }
+        .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+        .stat-card h3 { margin: 0; font-size: 16px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;}
+        .stat-number { margin-top: 10px; font-size: 42px; font-weight: 700; color: #0f172a;}
 
-        .nav-left {
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-right: 30px;
-        }
-
-        .logout-btn {
-            border: 1px solid #cbd5f5;
-            padding: 6px 14px;
-            border-radius: 6px;
-        }
-
-        /* Page wrapper */
-        .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* Dashboard cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .stat-card {
-            background: #fff;
-            padding: 24px;
-            border-radius: 14px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        }
-
-        .stat-card h3 {
-            margin: 0;
-            font-size: 15px;
-            color: #64748b;
-        }
-
-        .stat-number {
-            margin-top: 10px;
-            font-size: 36px;
-            font-weight: 700;
-        }
-
-        /* Form card */
-        .form-card {
-            background: #fff;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-            max-width: 600px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            font-size: 15px;
-        }
-
-        textarea {
-            min-height: 120px;
-        }
-
-        button {
-            background: #2563eb;
-            color: #fff;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-        .alert {
-  background: #dcfce7;
-  color: #166534;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-weight: 500;
-}
-
+        /* Alerts */
+        .alert { background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; }
+        
+        /* Buttons */
+        .action-btn { display: inline-block; background: #2563eb; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: 0.3s; margin-right: 10px; }
+        .action-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 
@@ -157,22 +44,28 @@
 
 <div class="navbar">
     <div class="nav-left">
-        <div class="nav-title">Complaint System</div>
-        <a href="/">Dashboard</a>
-        <a href="{% url 'create_complaint' %}">Create Complaint</a>
-<a href="{% url 'my_complaints' %}">My Complaints</a>
-
+        <div class="nav-title">DAV Complaint System</div>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_staff %}
+                <a href="{% url 'all_complaints' %}">All Complaints</a>
+            {% else %}
+                <a href="{% url 'create_complaint' %}">File Complaint</a>
+                <a href="{% url 'my_complaints' %}">My Complaints</a>
+            {% endif %}
+        {% endif %}
     </div>
-  <form method="post" action="/accounts/logout/" onsubmit="return confirmLogout()">
-  {% csrf_token %}
-  <button type="submit" class="logout-btn">Logout</button>
-</form>
 
-
+    {% if request.user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" onsubmit="return confirmLogout()" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout ({{ request.user.username }})</button>
+        </form>
+    {% endif %}
 </div>
 
 <div class="container">
-
     {% if messages %}
         <div id="alert-box">
             {% for message in messages %}
@@ -183,27 +76,27 @@
 
     {% block content %}{% endblock %}
 </div>
+
 <script>
-    // Auto-dismiss success message
+    // Auto-dismiss alerts after 3 seconds
     setTimeout(() => {
         const alertBox = document.getElementById("alert-box");
         if (alertBox) {
+            alertBox.style.transition = "opacity 0.5s ease";
             alertBox.style.opacity = "0";
             setTimeout(() => alertBox.remove(), 500);
         }
     }, 3000);
 
-    // Logout confirmation
     function confirmLogout() {
         return confirm("Are you sure you want to logout?");
     }
 
-    // Status color mapping
+    // Apply color classes to status badges automatically
     document.querySelectorAll(".status").forEach(el => {
         el.classList.add(el.dataset.status);
     });
 </script>
-
 
 </body>
 </html>
