@@ -1,28 +1,24 @@
 {% extends "complaints/base.html" %}
-
-{% block title %}Student Dashboard{% endblock %}
+{% block title %}Dashboard | DAV Portal{% endblock %}
 
 {% block content %}
-    <h2 style="color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Student Dashboard</h2>
-    <p>Welcome, <strong>{{ request.user.username }}</strong>. Here is the status of the complaints you have submitted.</p>
+    <h2 style="margin-top: 0; font-weight: 400;">Overview of your student profile, <span style="color: var(--accent); font-weight: bold;">{{ request.user.username }}</span>.</h2>
+    <hr style="border-color: var(--border); margin-bottom: 30px;">
 
     <div class="stats-grid">
         <div class="stat-card">
-            <h3>My Total Complaints</h3>
-            <div class="stat-number">{{ total }}</div>
+            <h3>Total Complaints</h3>
+            <p class="number">{{ total }}</p>
         </div>
         <div class="stat-card">
-            <h3>Currently Pending</h3>
-            <div class="stat-number" style="color: #d97706;">{{ pending }}</div>
+            <h3>Action Required</h3>
+            <p class="number" style="color: #fcd34d;">{{ pending }}</p>
         </div>
         <div class="stat-card">
-            <h3>Successfully Resolved</h3>
-            <div class="stat-number" style="color: #16a34a;">{{ resolved }}</div>
+            <h3>Resolved</h3>
+            <p class="number" style="color: #6ee7b7;">{{ resolved }}</p>
         </div>
     </div>
 
-    <div style="text-align: center;">
-        <a href="{% url 'create_complaint' %}" class="action-btn">File a New Complaint</a>
-        <a href="{% url 'my_complaints' %}" class="action-btn" style="background: #475569;">View Complaint History</a>
-    </div>
+    <a href="{% url 'create_complaint' %}" class="action-btn">File a New Complaint</a>
 {% endblock %}
