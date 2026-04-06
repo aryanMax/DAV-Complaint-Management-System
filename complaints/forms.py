@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Complaint 
+from .models import Complaint
 
 class StudentSignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -17,11 +17,10 @@ class StudentSignUpForm(UserCreationForm):
             user.save()
         return user
 
-
 class ComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
-        fields = ['title', 'category', 'description']
+        fields = ['title', 'category', 'description', 'image']
         
         widgets = {
             'title': forms.TextInput(attrs={
@@ -34,6 +33,9 @@ class ComplaintForm(forms.ModelForm):
             'description': forms.Textarea(attrs={
                 'placeholder': 'Please provide specific details (location, timing, people involved, etc.)...',
                 'rows': 5,
+                'style': 'box-sizing: border-box;'
+            }),
+            'image': forms.FileInput(attrs={
                 'style': 'box-sizing: border-box;'
             }),
         }

@@ -1,20 +1,24 @@
 {% extends "complaints/base.html" %}
+{% block title %}My Complaints{% endblock %}
 
 {% block content %}
-<h1>My Complaints</h1>
+<h2 style="margin-top: 0; font-weight: 400;">Your Complaint History</h2>
+<hr style="border-color: var(--border); margin-bottom: 30px;">
 
-<div class="stats-grid">
-{% for complaint in complaints %}
-  <div class="stat-card">
-    <h3>{{ complaint.title }}</h3>
-    <p class="status" data-status="{{ complaint.status }}">
-  {{ complaint.status }}
-</p>
-
-    <p>Category: {{ complaint.category }}</p>
-  </div>
-{% empty %}
-  <p>No complaints found.</p>
-{% endfor %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    {% for complaint in complaints %}
+    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: var(--text-main); font-size: 18px;">{{ complaint.title }}</h3>
+            <span class="status" data-status="{{ complaint.status }}">{{ complaint.status }}</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 10px;">Category: <strong>{{ complaint.category }}</strong></p>
+        <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 15px;">Submitted: {{ complaint.created_at|date:"M d, Y" }}</p>
+        
+        <a href="{% url 'complaint_detail' complaint.id %}" class="action-btn" style="font-size: 12px; padding: 6px 12px; background: var(--bg-deep); color: var(--accent); border: 1px solid var(--accent);">View Details</a>
+    </div>
+    {% empty %}
+    <p style="color: var(--text-muted);">You haven't submitted any complaints yet.</p>
+    {% endfor %}
 </div>
 {% endblock %}

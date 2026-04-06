@@ -4,20 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 
-# Import your models and forms
 from .models import Complaint
 from .forms import ComplaintForm, StudentSignUpForm
 
 # ==========================================
-# AUTHENTICATION VIEWS
+# AUTHENTICATION & LANDING VIEWS
 # ==========================================
 
 def home_view(request):
-    # If they are already logged in, skip the intro and go straight to the dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')
-    
-    # Otherwise, show the introductory landing page
     return render(request, 'complaints/home.html')
 
 def signup_view(request):
@@ -40,7 +36,6 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            # Check if the selected role matches their actual staff status
             if login_type == 'admin' and user.is_staff:
                 login(request, user)
                 return redirect('dashboard')
@@ -58,15 +53,12 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
 # ==========================================
 # DASHBOARD & COMPLAINT VIEWS
 # ==========================================
 
 @login_required
 def dashboard_view(request):
-    # Route admins and students to their respective templates
-    # and fetch the correct complaints for the stats counters
     if request.user.is_staff:
         complaints = Complaint.objects.all()
         template_name = 'admin_dashboard.html'
@@ -84,7 +76,7 @@ def dashboard_view(request):
 @login_required
 def create_complaint_view(request):
     if request.method == 'POST':
-        form = ComplaintForm(request.POST)
+        form = ComplaintForm(request.POST, request.FILES)
         if form.is_valid():
             complaint = form.save(commit=False)
             complaint.created_by = request.user
@@ -96,21 +88,19 @@ def create_complaint_view(request):
 
 @login_required
 def my_complaints_view(request):
-    complaints = Complaint.objects.filter(created_by=request.user)
+    complaints = Complaint.objects.filter(created_by=request.user).order_by('-created_at')
     return render(request, 'complaints/my_complaints.html', {'complaints': complaints})
 
 @login_required
 def all_complaints_view(request):
-    # Security check: Only admins can view all complaints
     if not request.user.is_staff:
         return HttpResponseForbidden("You are not authorized to view this page.")
         
-    complaints = Complaint.objects.all()
+    complaints = Complaint.objects.all().order_by('-created_at')
     return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
 
 @login_required
 def update_status(request, complaint_id):
-    # Security check: Only admins can update statuses
     if not request.user.is_staff:
         return HttpResponseForbidden("You are not authorized to update complaints.")
         
@@ -126,10 +116,8 @@ def update_status(request, complaint_id):
 
 @login_required
 def complaint_detail(request, complaint_id):
-    # Fetch the complaint or return a 404 error if it doesn't exist
     complaint = get_object_or_404(Complaint, id=complaint_id)
     
-    # Security: Only admins and the student who created it can view the details
     if not request.user.is_staff and complaint.created_by != request.user:
         return HttpResponseForbidden("You are not authorized to view this complaint.")
         

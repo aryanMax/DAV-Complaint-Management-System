@@ -170,6 +170,12 @@ LOGIN_URL = 'login'
 
 # Tells Django where to redirect users after they successfully log in
 LOGIN_REDIRECT_URL = 'dashboard'
+<<<<<<< HEAD
 
 # Ignores the MySQL version check warning
 SILENCED_SYSTEM_CHECKS = ["mysql.W002"]
+=======
+# Media files configuration (Uploaded images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+>>>>>>> 158c7d539b93e69ab1ceb38b4bd0005e0b5c0f17
