@@ -3,60 +3,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DAV College Complaint Management - Login</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Login - DAV Portal</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b1120; min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; color: #f8fafc; }
+        .auth-card { background: #1e293b; padding: 40px; border-radius: 8px; border: 1px solid #334155; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .brand { color: #10b981; font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 30px; letter-spacing: 1px;}
+        
+        .toggle-container { display: flex; background: #0f172a; border-radius: 6px; margin-bottom: 25px; border: 1px solid #334155; overflow: hidden; }
+        .toggle-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .toggle-btn.active { background: #10b981; color: #000; }
+        
+        label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 14px; }
+        input { width: 100%; padding: 12px; background: #0b1120; border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 20px; box-sizing: border-box; }
+        input:focus { outline: none; border-color: #10b981; }
+        
+        .btn { width: 100%; padding: 12px; background: #10b981; color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn:hover { background: #059669; }
+        
+        .link { display: block; text-align: center; margin-top: 20px; color: #94a3b8; font-size: 14px; text-decoration: none; }
+        .link span { color: #10b981; }
+        
+        .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; text-align: center;}
+    </style>
 </head>
 <body>
-    <div class="auth-container">
-        <h2>System Login</h2>
+    <div class="auth-card">
+        <div class="brand">DAV PORTAL</div>
+        
         <div class="toggle-container">
             <button id="student-btn" class="toggle-btn active" onclick="switchTab('student')">Student</button>
             <button id="admin-btn" class="toggle-btn" onclick="switchTab('admin')">Admin</button>
         </div>
 
         {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
+            {% for message in messages %}
+                <div class="error-msg">{{ message }}</div>
+            {% endfor %}
         {% endif %}
 
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
             <input type="hidden" id="login_type" name="login_type" value="student">
             
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
+            <label>Username</label>
+            <input type="text" name="username" required autocomplete="off">
             
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+            <label>Password</label>
+            <input type="password" name="password" required>
             
-            <button type="submit" class="submit-btn">Login</button>
+            <button type="submit" class="btn">SECURE LOGIN</button>
         </form>
-        <p class="signup-link" id="signup-prompt">Don't have an account? <a href="{% url 'signup' %}">Sign Up Here</a></p>
+        
+        <a href="{% url 'signup' %}" class="link" id="signup-prompt">Don't have an account? <span>Sign Up</span></a>
     </div>
 
     <script>
         function switchTab(role) {
             document.getElementById('login_type').value = role;
-            
-            // UI Toggle
             document.getElementById('student-btn').classList.remove('active');
             document.getElementById('admin-btn').classList.remove('active');
             document.getElementById(role + '-btn').classList.add('active');
-
-            // Hide signup prompt if admin is selected
-            const signupPrompt = document.getElementById('signup-prompt');
-            if(role === 'admin') {
-                signupPrompt.style.display = 'none';
-            } else {
-                signupPrompt.style.display = 'block';
-            }
+            
+            document.getElementById('signup-prompt').style.display = (role === 'admin') ? 'none' : 'block';
         }
     </script>
 </body>
