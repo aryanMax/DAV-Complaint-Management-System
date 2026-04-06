@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Complaint
+from .models import Complaint
 
-admin.site.register(Profile)
+# Register your models here so they show up in the Django Admin panel
 admin.site.register(Complaint)
