@@ -8,6 +8,5 @@ urlpatterns = [
     path('', include('complaints.urls')), 
 ]
 
-# This serves media files during local development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
