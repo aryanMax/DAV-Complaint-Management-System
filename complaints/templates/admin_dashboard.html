@@ -1,27 +1,24 @@
 {% extends "complaints/base.html" %}
-
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Admin Dashboard | DAV Portal{% endblock %}
 
 {% block content %}
-    <h2 style="color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Admin Dashboard</h2>
-    <p>Welcome back, Administrator! Here is the current status of all college complaints.</p>
+    <h2 style="margin-top: 0; font-weight: 400;">System Overview - <span style="color: var(--accent); font-weight: bold;">Administrator</span></h2>
+    <hr style="border-color: var(--border); margin-bottom: 30px;">
 
     <div class="stats-grid">
         <div class="stat-card">
-            <h3>Total Complaints</h3>
-            <div class="stat-number">{{ total }}</div>
+            <h3>Total System Complaints</h3>
+            <p class="number">{{ total }}</p>
         </div>
         <div class="stat-card">
-            <h3>Pending Action</h3>
-            <div class="stat-number" style="color: #d97706;">{{ pending }}</div>
+            <h3>Pending Review</h3>
+            <p class="number" style="color: #fcd34d;">{{ pending }}</p>
         </div>
         <div class="stat-card">
-            <h3>Resolved</h3>
-            <div class="stat-number" style="color: #16a34a;">{{ resolved }}</div>
+            <h3>Resolved Issues</h3>
+            <p class="number" style="color: #6ee7b7;">{{ resolved }}</p>
         </div>
     </div>
 
-    <div style="text-align: center;">
-        <a href="{% url 'all_complaints' %}" class="action-btn">Review All Complaints</a>
-    </div>
+    <a href="{% url 'all_complaints' %}" class="action-btn">Review Complaint Database</a>
 {% endblock %}
