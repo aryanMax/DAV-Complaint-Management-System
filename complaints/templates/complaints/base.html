@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}DAV Complaint System{% endblock %}</title>
+    <title>{% block title %}Complaint Resolution Portal{% endblock %}</title>
     <style>
         :root {
-            --bg-deep: #0b1120;       /* Sidebar background */
-            --bg-main: #0f172a;       /* Main body background */
-            --bg-card: #1e293b;       /* Card background */
-            --border: #334155;        /* Subtle borders */
-            --text-main: #f8fafc;     /* Primary text */
-            --text-muted: #94a3b8;    /* Secondary text */
-            --accent: #10b981;        /* Emerald Green */
+            --bg-deep: #0b1120;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
             --accent-hover: #059669;
             --danger: #ef4444;
         }
@@ -26,7 +26,6 @@
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
         .sidebar {
             width: 250px;
             background-color: var(--bg-deep);
@@ -36,13 +35,15 @@
             padding-top: 20px;
         }
         .brand {
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--accent);
             padding: 0 20px 30px 20px;
             letter-spacing: 1px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
+            line-height: 1.4;
+            text-transform: uppercase;
         }
         .nav-link {
             padding: 12px 20px;
@@ -78,14 +79,12 @@
             color: var(--danger);
         }
 
-        /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1;
             padding: 40px;
             overflow-y: auto;
         }
 
-        /* --- REUSABLE COMPONENTS --- */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -126,7 +125,6 @@
         }
         .action-btn:hover { background-color: var(--accent-hover); }
 
-        /* Form Overrides for Dark Mode */
         input, select, textarea {
             background-color: var(--bg-deep);
             border: 1px solid var(--border);
@@ -141,7 +139,6 @@
             border-color: var(--accent);
         }
 
-        /* Status Badges */
         .status { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
         .status.PENDING { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
         .status.IN_PROGRESS { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
@@ -151,7 +148,7 @@
 <body>
 
     <div class="sidebar">
-        <div class="brand">DAV PORTAL</div>
+        <div class="brand">Complaint Resolution Portal</div>
         
         <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
         
@@ -185,7 +182,6 @@
     </div>
 
     <script>
-        // Apply color classes to status badges automatically
         document.querySelectorAll(".status").forEach(el => {
             el.classList.add(el.dataset.status);
         });
