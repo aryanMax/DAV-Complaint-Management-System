@@ -12,6 +12,14 @@ from .forms import ComplaintForm, StudentSignUpForm
 # AUTHENTICATION VIEWS
 # ==========================================
 
+def home_view(request):
+    # If they are already logged in, skip the intro and go straight to the dashboard
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
+    # Otherwise, show the introductory landing page
+    return render(request, 'complaints/home.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = StudentSignUpForm(request.POST)
