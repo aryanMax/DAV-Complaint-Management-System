@@ -164,3 +164,6 @@ LOGIN_URL = 'login'
 
 # Tells Django where to redirect users after they successfully log in
 LOGIN_REDIRECT_URL = 'dashboard'
+# Media files configuration (Uploaded images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
