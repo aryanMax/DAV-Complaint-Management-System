@@ -1,15 +1,5 @@
 import os
 from pathlib import Path
-import pymysql
-
-# 1. Tell Django to use pymysql instead of mysqlclient
-pymysql.version_info = (2, 2, 1, 'final', 0)
-pymysql.install_as_MySQLdb()
-
-# 2. Trick Django into thinking MariaDB is version 10.6.0
-import django
-from django.db.backends.mysql.base import DatabaseWrapper
-DatabaseWrapper.server_version = (10, 6, 0)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,25 +94,6 @@ STATIC_URL = 'static/'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-<<<<<<< HEAD
-# This ignores the version check error
-SILENCED_SYSTEM_CHECKS = ["mysql.W002"]
-
-# settings.py
-
-# Tells Django where to redirect unauthenticated users
-LOGIN_URL = 'login'
-
-# Tells Django where to redirect users after they successfully log in
-LOGIN_REDIRECT_URL = 'dashboard'
-<<<<<<< HEAD
-
-# Ignores the MySQL version check warning
-SILENCED_SYSTEM_CHECKS = ["mysql.W002"]
-=======
-=======
->>>>>>> f5ebbec0d959c11e1eb788da489f5874fb3afbd5
 # Media files configuration (Uploaded images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
->>>>>>> 158c7d539b93e69ab1ceb38b4bd0005e0b5c0f17
