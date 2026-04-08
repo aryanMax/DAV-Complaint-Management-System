@@ -4,13 +4,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 
-from .models import Complaint
-from .forms import ComplaintForm, StudentSignUpForm
+from .models import Complaint, Notice
+from .forms import ComplaintForm, StudentSignUpForm, NoticeForm
+
+# ==========================================
+# AUTHENTICATION & LANDING VIEWS
+# ==========================================
 
 def home_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
-    return render(request, 'complaints/home.html')
+    
+    # Fetch the 5 most recent notices for the public landing page
+    recent_notices = Notice.objects.all().order_by('-created_at')[:5]
+    return render(request, 'complaints/home.html', {'notices': recent_notices})
 
 def signup_view(request):
     if request.method == 'POST':
@@ -48,6 +55,10 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+# ==========================================
+# DASHBOARD & COMPLAINT VIEWS
+# ==========================================
 
 @login_required
 def dashboard_view(request):
@@ -123,7 +134,7 @@ def complaint_detail(request, complaint_id):
     if not request.user.is_staff and complaint.created_by != request.user:
         return HttpResponseForbidden("You are not authorized to view this complaint.")
         
-    # NEW: Handle feedback submission
+    # Handle feedback submission
     if request.method == 'POST' and request.user == complaint.created_by and complaint.status == 'RESOLVED' and not complaint.rating:
         rating = request.POST.get('rating')
         feedback_text = request.POST.get('feedback_text')
@@ -138,3 +149,29 @@ def complaint_detail(request, complaint_id):
             messages.error(request, "Please select a star rating.")
 
     return render(request, 'complaints/complaint_detail.html', {'complaint': complaint})
+
+# ==========================================
+# NOTICE BOARD VIEWS
+# ==========================================
+
+@login_required
+def notice_board_view(request):
+    notices = Notice.objects.all().order_by('-created_at')
+    return render(request, 'complaints/notice_board.html', {'notices': notices})
+
+@login_required
+def publish_notice_view(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to publish notices.")
+    
+    if request.method == 'POST':
+        form = NoticeForm(request.POST)
+        if form.is_valid():
+            notice = form.save(commit=False)
+            notice.created_by = request.user
+            notice.save()
+            messages.success(request, "Notice published successfully!")
+            return redirect('notice_board')
+    else:
+        form = NoticeForm()
+    return render(request, 'complaints/publish_notice.html', {'form': form})
