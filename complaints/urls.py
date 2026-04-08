@@ -17,4 +17,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
+    # ... your existing paths ...
+    path('notice-board/', views.notice_board_view, name='notice_board'),
+    path('publish-notice/', views.publish_notice_view, name='publish_notice'),
 ]
