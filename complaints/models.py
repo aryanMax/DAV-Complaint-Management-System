@@ -23,7 +23,6 @@ class Complaint(models.Model):
     admin_response = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='complaint_images/', blank=True, null=True)
     
-    # NEW FEEDBACK FIELDS
     rating = models.IntegerField(null=True, blank=True)
     feedback_text = models.TextField(blank=True, null=True)
     
@@ -32,7 +31,6 @@ class Complaint(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.status}"
-# ... (Keep your existing Complaint model above this) ...
 
 class Notice(models.Model):
     title = models.CharField(max_length=200)
@@ -42,3 +40,18 @@ class Notice(models.Model):
 
     def __str__(self):
         return self.title
+
+# === NEW: LOST & FOUND MODEL ===
+class LostAndFoundItem(models.Model):
+    TYPE_CHOICES = (('LOST', 'Lost Item'), ('FOUND', 'Found Item'))
+    
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    item_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    image = models.ImageField(upload_to='lost_found_images/', blank=True, null=True)
+    is_resolved = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.item_type} - {self.title}"
