@@ -1,0 +1,26 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Notice Board{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px;">
+    <h2 style="margin-top: 0; font-weight: 400; display: flex; justify-content: space-between; align-items: center;">
+        📢 Official Notice Board
+        {% if request.user.is_staff %}
+        <a href="{% url 'publish_notice' %}" class="action-btn" style="font-size: 14px;">+ New Notice</a>
+        {% endif %}
+    </h2>
+    <hr style="border-color: var(--border); margin-bottom: 30px;">
+
+    {% for notice in notices %}
+    <div style="background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+        <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 10px;">
+            Published • {{ notice.created_at|date:"F j, Y - g:i A" }}
+        </div>
+        <h3 style="color: var(--text-main); margin: 0 0 15px 0; font-size: 20px;">{{ notice.title }}</h3>
+        <div style="color: var(--text-main); line-height: 1.6; white-space: pre-wrap; background: var(--bg-deep); padding: 15px; border-radius: 6px;">{{ notice.content }}</div>
+    </div>
+    {% empty %}
+    <p style="color: var(--text-muted);">There are no notices posted yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
