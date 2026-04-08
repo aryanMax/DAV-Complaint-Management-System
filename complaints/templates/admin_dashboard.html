@@ -1,24 +1,55 @@
-{% extends "complaints/base.html" %}
-{% block title %}Admin Dashboard | DAV Portal{% endblock %}
+{% extends 'complaints/base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 25px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .stat-card h3 {
+        margin-top: 0;
+        font-size: 16px;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+    }
+    .stat-card .number {
+        font-size: 42px;
+        font-weight: bold;
+        margin: 0;
+    }
+</style>
+
+<div style="margin-bottom: 30px;">
     <h2 style="margin-top: 0; font-weight: 400;">System Overview - <span style="color: var(--accent); font-weight: bold;">Administrator</span></h2>
-    <hr style="border-color: var(--border); margin-bottom: 30px;">
+    <hr style="border-color: var(--border);">
+</div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Total System Complaints</h3>
-            <p class="number">{{ total }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Pending Review</h3>
-            <p class="number" style="color: #fcd34d;">{{ pending }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Resolved Issues</h3>
-            <p class="number" style="color: #6ee7b7;">{{ resolved }}</p>
-        </div>
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total System Complaints</h3>
+        <p class="number" style="color: var(--text-main);">{{ total }}</p>
     </div>
+    <div class="stat-card">
+        <h3 style="color: #f59e0b;">Pending Review</h3>
+        <p class="number" style="color: #fcd34d;">{{ pending }}</p>
+    </div>
+    <div class="stat-card">
+        <h3 style="color: var(--accent);">Resolved Issues</h3>
+        <p class="number" style="color: var(--accent);">{{ resolved }}</p>
+    </div>
+</div>
 
+<div style="margin-top: 30px;">
     <a href="{% url 'all_complaints' %}" class="action-btn">Review Complaint Database</a>
+</div>
 {% endblock %}
