@@ -2,6 +2,15 @@
 {% block title %}Complaint Details{% endblock %}
 
 {% block content %}
+<style>
+    /* CSS for interactive 5-star rating */
+    .star-rating { direction: rtl; display: inline-flex; gap: 5px; }
+    .star-rating input { display: none; }
+    .star-rating label { color: var(--border); font-size: 35px; cursor: pointer; transition: 0.2s; margin: 0; }
+    .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #f59e0b; }
+    .static-stars { color: #f59e0b; font-size: 22px; letter-spacing: 2px; }
+</style>
+
 <div style="max-width: 800px; background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border);">
     
     <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px;">
@@ -26,6 +35,7 @@
         <img src="{{ complaint.image.url }}" alt="Complaint Media" style="max-width: 100%; border-radius: 6px; border: 1px solid var(--border);">
     </div>
     {% endif %}
+
     {% if complaint.admin_response %}
     <div style="margin-bottom: 30px; background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--accent); padding: 20px; border-radius: 4px;">
         <h4 style="color: var(--accent); margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
@@ -33,6 +43,48 @@
         </h4>
         <p style="color: var(--text-main); margin: 0; line-height: 1.6; font-size: 15px;">{{ complaint.admin_response }}</p>
     </div>
+    {% endif %}
+
+    {% if complaint.status == 'RESOLVED' %}
+        <div style="margin-bottom: 30px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3); padding: 20px; border-radius: 6px;">
+            <h4 style="color: #fcd34d; margin: 0 0 15px 0; font-size: 16px;">⭐ Solution Feedback</h4>
+            
+            {% if complaint.rating %}
+                <div style="margin-bottom: 10px;">
+                    <span class="static-stars">
+                        {% if complaint.rating >= 1 %}★{% else %}<span style="color: var(--border);">★</span>{% endif %}
+                        {% if complaint.rating >= 2 %}★{% else %}<span style="color: var(--border);">★</span>{% endif %}
+                        {% if complaint.rating >= 3 %}★{% else %}<span style="color: var(--border);">★</span>{% endif %}
+                        {% if complaint.rating >= 4 %}★{% else %}<span style="color: var(--border);">★</span>{% endif %}
+                        {% if complaint.rating == 5 %}★{% else %}<span style="color: var(--border);">★</span>{% endif %}
+                    </span>
+                    <span style="color: var(--text-muted); margin-left: 10px; font-size: 14px;">({{ complaint.rating }}/5)</span>
+                </div>
+                {% if complaint.feedback_text %}
+                    <p style="color: var(--text-main); font-style: italic; margin: 0;">"{{ complaint.feedback_text }}"</p>
+                {% endif %}
+            
+            {% elif request.user == complaint.created_by %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <p style="color: var(--text-muted); margin: 0 0 10px 0; font-size: 14px;">How satisfied are you with this resolution?</p>
+                    
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required /><label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+                    </div>
+                    
+                    <textarea name="feedback_text" rows="2" placeholder="Leave an optional comment about the resolution..." style="background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 15px; margin-bottom: 15px;"></textarea>
+                    
+                    <button type="submit" class="action-btn" style="background: #f59e0b; color: #000; width: 100%;">Submit Feedback</button>
+                </form>
+            {% else %}
+                <p style="color: var(--text-muted); margin: 0; font-size: 14px;"><i>The student has not provided a rating yet.</i></p>
+            {% endif %}
+        </div>
     {% endif %}
 
     <div style="display: flex; gap: 15px;">
