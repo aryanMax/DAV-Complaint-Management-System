@@ -87,4 +87,89 @@ def all_complaints_view(request):
     complaints = Complaint.objects.all().order_by('-created_at')
     return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
 
-@login
+@login_required
+def update_status(request, complaint_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to update complaints.")
+        
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        admin_response = request.POST.get('admin_response')
+        custom_response = request.POST.get('custom_response')
+
+        complaint.status = new_status
+        
+        if admin_response == 'custom':
+            complaint.admin_response = custom_response
+        elif admin_response:
+            complaint.admin_response = admin_response
+
+        complaint.save()
+        return redirect('all_complaints')
+
+    return render(request, 'complaints/update_status.html', {'complaint': complaint})
+
+@login_required
+def complaint_detail(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    
+    if not request.user.is_staff and complaint.created_by != request.user:
+        return HttpResponseForbidden("You are not authorized to view this complaint.")
+        
+    if request.method == 'POST' and request.user == complaint.created_by and complaint.status == 'RESOLVED' and not complaint.rating:
+        rating = request.POST.get('rating')
+        feedback_text = request.POST.get('feedback_text')
+        
+        if rating:
+            complaint.rating = int(rating)
+            complaint.feedback_text = feedback_text
+            complaint.save()
+            messages.success(request, "Thank you for rating the resolution!")
+            return redirect('complaint_detail', complaint_id=complaint.id)
+        else:
+            messages.error(request, "Please select a star rating.")
+
+    return render(request, 'complaints/complaint_detail.html', {'complaint': complaint})
+
+@login_required
+def notice_board_view(request):
+    notices = Notice.objects.all().order_by('-created_at')
+    return render(request, 'complaints/notice_board.html', {'notices': notices})
+
+@login_required
+def publish_notice_view(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to publish notices.")
+    
+    if request.method == 'POST':
+        form = NoticeForm(request.POST)
+        if form.is_valid():
+            notice = form.save(commit=False)
+            notice.created_by = request.user
+            notice.save()
+            messages.success(request, "Notice published successfully!")
+            return redirect('notice_board')
+    else:
+        form = NoticeForm()
+    return render(request, 'complaints/publish_notice.html', {'form': form})
+
+@login_required
+def lost_and_found_view(request):
+    items = LostAndFoundItem.objects.filter(is_resolved=False).order_by('-created_at')
+    return render(request, 'complaints/lost_and_found.html', {'items': items})
+
+@login_required
+def report_item_view(request):
+    if request.method == 'POST':
+        form = LostAndFoundForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by = request.user
+            item.save()
+            messages.success(request, "Item reported successfully!")
+            return redirect('lost_and_found')
+    else:
+        form = LostAndFoundForm()
+    return render(request, 'complaints/report_item.html', {'form': form})
