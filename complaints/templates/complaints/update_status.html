@@ -1,19 +1,61 @@
 {% extends 'complaints/base.html' %}
-
-{% block title %}Update Status{% endblock %}
+{% block title %}Update Complaint Status{% endblock %}
 
 {% block content %}
-<h3>Update Complaint Status</h3>
+<div style="max-width: 600px; background: var(--bg-card); padding: 35px; border-radius: 8px; border: 1px solid var(--border);">
+    <h2 style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 12px;">Admin Panel: Update Status</h2>
 
-<p><strong>{{ complaint.title }}</strong></p>
+    <div style="margin-bottom: 25px; background: var(--bg-deep); padding: 15px; border-radius: 6px; border: 1px solid var(--border);">
+        <h4 style="color: var(--text-muted); margin: 0 0 5px 0;">Resolving Complaint:</h4>
+        <p style="color: var(--accent); font-size: 18px; margin: 0; font-weight: bold;">{{ complaint.title }}</p>
+        <p style="color: var(--text-muted); font-size: 12px; margin: 5px 0 0 0;">Submitted by: {{ complaint.created_by.username }}</p>
+    </div>
 
-<form method="post">
-    {% csrf_token %}
-    <select name="status" class="form-select w-25">
-        <option value="PENDING">Pending</option>
-        <option value="IN_PROGRESS">In Progress</option>
-        <option value="RESOLVED">Resolved</option>
-    </select>
-    <button type="submit" class="btn btn-success mt-3">Update</button>
-</form>
+    <form method="POST">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Select New Status</label>
+            <select name="status" style="background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 6px; width: 100%; cursor: pointer;">
+                <option value="PENDING" {% if complaint.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                <option value="IN_PROGRESS" {% if complaint.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                <option value="RESOLVED" {% if complaint.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <label style="display: block; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Admin Response / Comment</label>
+            
+            <select name="admin_response" id="adminResponseSelect" onchange="toggleCustomResponse()" style="background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 6px; width: 100%; margin-bottom: 10px; cursor: pointer;">
+                <option value="">-- No Comment --</option>
+                <option value="We have received your complaint and are looking into it.">Received and looking into it.</option>
+                <option value="The maintenance team has been notified and dispatched.">Maintenance team dispatched.</option>
+                <option value="This issue requires administrative approval, please expect a slight delay.">Requires admin approval, expect delay.</option>
+                <option value="The issue has been successfully resolved. Please verify.">Resolved successfully.</option>
+                <option value="custom" style="color: var(--accent); font-weight: bold;">📝 Write a custom comment...</option>
+            </select>
+
+            <textarea name="custom_response" id="customResponseBox" style="display: none; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 10px;" rows="4" placeholder="Type your custom explanation here..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <button type="submit" class="action-btn" style="flex: 1; background: #f59e0b; color: #000;">Update Status & Send Response</button>
+            <a href="{% url 'all_complaints' %}" class="action-btn" style="flex: 1; text-align: center; background: var(--bg-deep); color: var(--text-main); border: 1px solid var(--border);">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleCustomResponse() {
+        var select = document.getElementById("adminResponseSelect");
+        var customBox = document.getElementById("customResponseBox");
+        if (select.value === "custom") {
+            customBox.style.display = "block";
+            customBox.required = true;
+        } else {
+            customBox.style.display = "none";
+            customBox.required = false;
+        }
+    }
+</script>
 {% endblock %}
