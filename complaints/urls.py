@@ -20,4 +20,6 @@ urlpatterns = [
     # ... your existing paths ...
     path('notice-board/', views.notice_board_view, name='notice_board'),
     path('publish-notice/', views.publish_notice_view, name='publish_notice'),
+    path('lost-and-found/', views.lost_and_found_view, name='lost_and_found'),
+    path('report-item/', views.report_item_view, name='report_item'),
 ]
