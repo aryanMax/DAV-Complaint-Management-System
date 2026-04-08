@@ -1,0 +1,21 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Report Item{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; background: var(--bg-card); padding: 35px; border-radius: 8px; border: 1px solid var(--border);">
+    <h2 style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 12px;">Report Lost or Found Item</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin-bottom: 25px;">
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Please provide clear details to help identify the item.</p>
+            {{ form.as_p }}
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <button type="submit" class="action-btn" style="flex: 1;">Submit Report</button>
+            <a href="{% url 'lost_and_found' %}" class="action-btn" style="flex: 1; text-align: center; background: var(--bg-deep); color: var(--text-main); border: 1px solid var(--border);">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
