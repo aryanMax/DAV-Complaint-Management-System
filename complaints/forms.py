@@ -39,3 +39,22 @@ class ComplaintForm(forms.ModelForm):
                 'style': 'box-sizing: border-box;'
             }),
         }
+# ... (Keep your existing forms above this) ...
+from .models import Notice # Don't forget to import Notice if it's not imported!
+
+class NoticeForm(forms.ModelForm):
+    class Meta:
+        model = Notice
+        fields = ['title', 'content']
+        
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'placeholder': 'E.g., Hostel Wi-Fi Maintenance Update',
+                'style': 'box-sizing: border-box;'
+            }),
+            'content': forms.Textarea(attrs={
+                'placeholder': 'Write the full announcement here...',
+                'rows': 5,
+                'style': 'box-sizing: border-box;'
+            }),
+        }
