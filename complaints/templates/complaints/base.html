@@ -130,11 +130,13 @@
             {% if request.user.is_staff %}
                 <a href="{% url 'all_complaints' %}" class="nav-link">All Complaints</a>
                 <a href="{% url 'notice_board' %}" class="nav-link">📢 Notice Board</a>
+                <a href="{% url 'lost_and_found' %}" class="nav-link">🔍 Lost & Found</a>
                 <a href="{% url 'publish_notice' %}" class="nav-link" style="color: var(--accent);">+ Publish Notice</a>
             {% else %}
                 <a href="{% url 'create_complaint' %}" class="nav-link">File Complaint</a>
                 <a href="{% url 'my_complaints' %}" class="nav-link">My Complaints</a>
                 <a href="{% url 'notice_board' %}" class="nav-link">📢 Notice Board</a>
+                <a href="{% url 'lost_and_found' %}" class="nav-link">🔍 Lost & Found</a>
             {% endif %}
         {% endif %}
 
@@ -144,9 +146,7 @@
                 <button type="submit" class="logout-btn">Log Out</button>
             </form>
         </div>
-    </div>
-
-    <div class="main-content">
+    </div> <div class="main-content">
         {% if messages %}
             {% for message in messages %}
                 <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
