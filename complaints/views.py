@@ -123,14 +123,6 @@ def complaint_detail(request, complaint_id):
     if not request.user.is_staff and complaint.created_by != request.user:
         return HttpResponseForbidden("You are not authorized to view this complaint.")
         
-    return render(request, 'complaints/complaint_detail.html', {'complaint': complaint})
-@login_required
-def complaint_detail(request, complaint_id):
-    complaint = get_object_or_404(Complaint, id=complaint_id)
-    
-    if not request.user.is_staff and complaint.created_by != request.user:
-        return HttpResponseForbidden("You are not authorized to view this complaint.")
-        
     # NEW: Handle feedback submission
     if request.method == 'POST' and request.user == complaint.created_by and complaint.status == 'RESOLVED' and not complaint.rating:
         rating = request.POST.get('rating')
