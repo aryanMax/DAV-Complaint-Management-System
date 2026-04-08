@@ -1,18 +1,16 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from .models import Complaint
+from .models import Complaint, Notice, LostAndFoundItem
 
-class StudentSignUpForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    
+class StudentSignUpForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Choose a secure password'}))
     class Meta:
         model = User
-        fields = ('username', 'email')
-
+        fields = ['username', 'email', 'password']
+    
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_staff = False 
+        user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
         return user
@@ -21,40 +19,26 @@ class ComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
         fields = ['title', 'category', 'description', 'image']
-        
         widgets = {
-            'title': forms.TextInput(attrs={
-                'placeholder': 'E.g., Wi-Fi not working in Hostel B',
-                'style': 'box-sizing: border-box;'
-            }),
-            'category': forms.Select(attrs={
-                'style': 'box-sizing: border-box;'
-            }),
-            'description': forms.Textarea(attrs={
-                'placeholder': 'Please provide specific details (location, timing, people involved, etc.)...',
-                'rows': 5,
-                'style': 'box-sizing: border-box;'
-            }),
-            'image': forms.FileInput(attrs={
-                'style': 'box-sizing: border-box;'
-            }),
+            'title': forms.TextInput(attrs={'placeholder': 'Brief title of the issue', 'style': 'box-sizing: border-box;'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Provide full details here...', 'style': 'box-sizing: border-box;'}),
         }
-# ... (Keep your existing forms above this) ...
-from .models import Notice # Don't forget to import Notice if it's not imported!
 
 class NoticeForm(forms.ModelForm):
     class Meta:
         model = Notice
         fields = ['title', 'content']
-        
         widgets = {
-            'title': forms.TextInput(attrs={
-                'placeholder': 'E.g., Hostel Wi-Fi Maintenance Update',
-                'style': 'box-sizing: border-box;'
-            }),
-            'content': forms.Textarea(attrs={
-                'placeholder': 'Write the full announcement here...',
-                'rows': 5,
-                'style': 'box-sizing: border-box;'
-            }),
+            'title': forms.TextInput(attrs={'placeholder': 'E.g., Hostel Wi-Fi Maintenance Update', 'style': 'box-sizing: border-box;'}),
+            'content': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Write the full announcement here...', 'style': 'box-sizing: border-box;'}),
+        }
+
+# === NEW: LOST & FOUND FORM ===
+class LostAndFoundForm(forms.ModelForm):
+    class Meta:
+        model = LostAndFoundItem
+        fields = ['title', 'item_type', 'description', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'E.g., Blue Casio Watch', 'style': 'box-sizing: border-box;'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Where was it lost/found? Distinguishing marks?', 'style': 'box-sizing: border-box;'}),
         }
