@@ -7,10 +7,6 @@ from django.http import HttpResponseForbidden
 from .models import Complaint
 from .forms import ComplaintForm, StudentSignUpForm
 
-# ==========================================
-# AUTHENTICATION & LANDING VIEWS
-# ==========================================
-
 def home_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -52,10 +48,6 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-# ==========================================
-# DASHBOARD & COMPLAINT VIEWS
-# ==========================================
 
 @login_required
 def dashboard_view(request):
@@ -108,7 +100,17 @@ def update_status(request, complaint_id):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
+        admin_response = request.POST.get('admin_response')
+        custom_response = request.POST.get('custom_response')
+
         complaint.status = new_status
+        
+        # Save the custom comment or the selected predefined comment
+        if admin_response == 'custom':
+            complaint.admin_response = custom_response
+        elif admin_response:
+            complaint.admin_response = admin_response
+
         complaint.save()
         return redirect('all_complaints')
 
