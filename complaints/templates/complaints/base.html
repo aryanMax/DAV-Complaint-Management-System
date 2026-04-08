@@ -85,32 +85,6 @@
             overflow-y: auto;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: 8px;
-        }
-        .stat-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 13px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .stat-card .number {
-            font-size: 36px;
-            font-weight: bold;
-            color: var(--text-main);
-            margin: 0;
-        }
-        
         .action-btn {
             background-color: var(--accent);
             color: #000;
@@ -155,36 +129,13 @@
         {% if request.user.is_authenticated %}
             {% if request.user.is_staff %}
                 <a href="{% url 'all_complaints' %}" class="nav-link">All Complaints</a>
+                <a href="{% url 'notice_board' %}" class="nav-link">📢 Notice Board</a>
+                <a href="{% url 'publish_notice' %}" class="nav-link" style="color: var(--accent);">+ Publish Notice</a>
             {% else %}
                 <a href="{% url 'create_complaint' %}" class="nav-link">File Complaint</a>
                 <a href="{% url 'my_complaints' %}" class="nav-link">My Complaints</a>
+                <a href="{% url 'notice_board' %}" class="nav-link">📢 Notice Board</a>
             {% endif %}
         {% endif %}
 
         <div class="logout-container">
-            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="main-content">
-        {% if messages %}
-            {% for message in messages %}
-                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; color: #fcd34d; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
-                    ⚠ {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        {% block content %}{% endblock %}
-    </div>
-
-    <script>
-        document.querySelectorAll(".status").forEach(el => {
-            el.classList.add(el.dataset.status);
-        });
-    </script>
-</body>
-</html>
