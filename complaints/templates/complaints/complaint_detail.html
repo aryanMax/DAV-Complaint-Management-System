@@ -26,6 +26,14 @@
         <img src="{{ complaint.image.url }}" alt="Complaint Media" style="max-width: 100%; border-radius: 6px; border: 1px solid var(--border);">
     </div>
     {% endif %}
+    {% if complaint.admin_response %}
+    <div style="margin-bottom: 30px; background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--accent); padding: 20px; border-radius: 4px;">
+        <h4 style="color: var(--accent); margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 18px;">🛡️</span> Official Admin Response:
+        </h4>
+        <p style="color: var(--text-main); margin: 0; line-height: 1.6; font-size: 15px;">{{ complaint.admin_response }}</p>
+    </div>
+    {% endif %}
 
     <div style="display: flex; gap: 15px;">
         {% if request.user.is_staff %}
