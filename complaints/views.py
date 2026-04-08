@@ -1,3 +1,7 @@
+# Add this import at the very top of views.py:
+from .models import LostAndFoundItem
+from .forms import LostAndFoundForm
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -170,6 +174,26 @@ def publish_notice_view(request):
             notice = form.save(commit=False)
             notice.created_by = request.user
             notice.save()
+
+# Add these views at the very bottom of views.py:
+@login_required
+def lost_and_found_view(request):
+    items = LostAndFoundItem.objects.filter(is_resolved=False).order_by('-created_at')
+    return render(request, 'complaints/lost_and_found.html', {'items': items})
+
+@login_required
+def report_item_view(request):
+    if request.method == 'POST':
+        form = LostAndFoundForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by = request.user
+            item.save()
+            messages.success(request, "Item reported successfully!")
+            return redirect('lost_and_found')
+    else:
+        form = LostAndFoundForm()
+    return render(request, 'complaints/report_item.html', {'form': form})
             messages.success(request, "Notice published successfully!")
             return redirect('notice_board')
     else:
