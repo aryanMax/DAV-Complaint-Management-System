@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import Complaint, Notice, LostAndFoundItem
 from .forms import ComplaintForm, StudentSignUpForm, NoticeForm, LostAndFoundForm
@@ -86,6 +88,28 @@ def all_complaints_view(request):
         
     complaints = Complaint.objects.all().order_by('-created_at')
     return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
+
+# === NEW PRIORITY VIEW ===
+@login_required
+def priority_complaints_view(request):
+    # Calculate exactly 3 days ago from this exact moment
+    three_days_ago = timezone.now() - timedelta(days=3)
+
+    if request.user.is_staff:
+        # Admins see all unresolved complaints older than 3 days
+        complaints = Complaint.objects.filter(
+            status__in=['PENDING', 'IN_PROGRESS'],
+            created_at__lte=three_days_ago
+        ).order_by('created_at') # ordered ascending (oldest first)
+    else:
+        # Students see their own unresolved complaints older than 3 days
+        complaints = Complaint.objects.filter(
+            created_by=request.user,
+            status__in=['PENDING', 'IN_PROGRESS'],
+            created_at__lte=three_days_ago
+        ).order_by('created_at')
+
+    return render(request, 'complaints/priority_complaints.html', {'complaints': complaints})
 
 @login_required
 def update_status(request, complaint_id):
