@@ -3,11 +3,32 @@ from django.contrib.auth.models import User
 from .models import Complaint, Notice, LostAndFoundItem
 
 class StudentSignUpForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Choose a secure password'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'placeholder': 'Choose a secure password', 
+        'style': 'width: 100%; padding: 12px; background: #0b1120; border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 20px; box-sizing: border-box;'
+    }))
+    password_confirm = forms.CharField(label='Confirm Password', widget=forms.PasswordInput(attrs={
+        'placeholder': 'Confirm your password', 
+        'style': 'width: 100%; padding: 12px; background: #0b1120; border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 20px; box-sizing: border-box;'
+    }))
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
-    
+        fields = ['username', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'style': 'width: 100%; padding: 12px; background: #0b1120; border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 5px; box-sizing: border-box;'}),
+            'email': forms.EmailInput(attrs={'style': 'width: 100%; padding: 12px; background: #0b1120; border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 20px; box-sizing: border-box;'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError("Passwords do not match!")
+        return cleaned_data
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
