@@ -3,104 +3,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Sign Up - DAV College</title>
+    <title>Student Registration - DAV Portal</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; color: #333; }
-        .auth-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 100%; max-width: 450px; }
-        h2 { text-align: center; color: #0f172a; margin-top: 0; margin-bottom: 25px; }
-        .input-group { margin-bottom: 18px; }
-        .input-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #334155; font-size: 14px;}
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b1120; min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; color: #f8fafc; }
+        .auth-card { background: #1e293b; padding: 40px; border-radius: 8px; border: 1px solid #334155; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .brand { color: #10b981; font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 30px; letter-spacing: 1px;}
         
-        /* Form inputs styling applied globally to Django's auto-generated fields */
-        input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; transition: 0.3s border; font-size: 15px; background: #f8fafc; }
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); background: white; }
+        label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 14px; font-weight: 600;}
+        input:focus { outline: none; border-color: #10b981 !important; }
         
-        .submit-btn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .submit-btn:hover { background: #1d4ed8; }
-        .signup-link { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
-        .signup-link a { color: #2563eb; text-decoration: none; font-weight: bold; }
+        .btn { width: 100%; padding: 12px; background: #10b981; color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-top: 10px;}
+        .btn:hover { background: #059669; }
         
-        /* Error and Help text styling */
-        .error-text { color: #dc2626; font-size: 13px; margin-top: 6px; display: block; font-weight: 500; }
-        .help-text { color: #64748b; font-size: 12px; margin-top: 6px; display: block; line-height: 1.4; }
+        .link { display: block; text-align: center; margin-top: 20px; color: #94a3b8; font-size: 14px; text-decoration: none; }
+        .link span { color: #10b981; }
         
-        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 25px; font-size: 14px; color: #475569; }
-        .checkbox-group input { width: auto; cursor: pointer; }
+        .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; text-align: center;}
+        .helptext { font-size: 12px; color: #64748b; margin-top: -3px; margin-bottom: 15px; display: block; }
+        ul.errorlist { color: #fca5a5; font-size: 13px; list-style-type: none; padding: 0; margin-top: -15px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <h2>Student Registration</h2>
+    <div class="auth-card">
+        <div class="brand">STUDENT REGISTRATION</div>
+
+        {% if form.errors and not form.non_field_errors %}
+            <div class="error-msg">Please correct the errors below.</div>
+        {% endif %}
         
         {% if form.non_field_errors %}
-            <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; border-left: 4px solid #dc2626;">
-                {{ form.non_field_errors }}
+            <div class="error-msg">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
         {% endif %}
 
         <form method="POST" action="{% url 'signup' %}">
             {% csrf_token %}
             
-            <div class="input-group">
-                <label>Username</label>
-                {{ form.username }}
-                {% if form.username.errors %}
-                    <span class="error-text">⚠️ {{ form.username.errors.0 }}</span>
-                {% endif %}
-                <span class="help-text">Letters, digits and @/./+/-/_ only.</span>
-            </div>
-
-            <div class="input-group">
-                <label>Email Address</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <span class="error-text">⚠️ {{ form.email.errors.0 }}</span>
-                {% endif %}
-            </div>
-
-            <div class="input-group">
-                <label>Password</label>
-                {{ form.password1 }}
-                {% if form.password1.errors %}
-                    <span class="error-text">⚠️ {{ form.password1.errors.0 }}</span>
-                {% endif %}
-            </div>
-
-            <div class="input-group">
-                <label>Password Confirmation</label>
-                {{ form.password2 }}
-                {% if form.password2.errors %}
-                    <span class="error-text">⚠️ {{ form.password2.errors.0 }}</span>
-                {% endif %}
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="showPasswordToggle" onclick="togglePasswords()">
-                <label for="showPasswordToggle" style="margin: 0; cursor: pointer;">Show Passwords</label>
-            </div>
+            <label>Username</label>
+            {{ form.username }}
+            <span class="helptext">Letters, digits and @/./+/-/_ only.</span>
+            {{ form.username.errors }}
             
-            <button type="submit" class="submit-btn">Create Account</button>
+            <label>Email Address</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+
+            <label>Password</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+
+            <label>Confirm Password</label>
+            {{ form.password_confirm }}
+            {{ form.password_confirm.errors }}
+            
+            <button type="submit" class="btn">CREATE ACCOUNT</button>
         </form>
-        <p class="signup-link">
-            Already have an account? <a href="{% url 'login' %}">Login Here</a>
-        </p>
+        
+        <a href="{% url 'login' %}" class="link">Already have an account? <span>Login Here</span></a>
     </div>
-
-    <script>
-        function togglePasswords() {
-            // Django automatically assigns these IDs to the UserCreationForm password fields
-            var pass1 = document.getElementById("id_password1");
-            var pass2 = document.getElementById("id_password2");
-            var checkbox = document.getElementById("showPasswordToggle");
-            
-            if (checkbox.checked) {
-                pass1.type = "text";
-                pass2.type = "text";
-            } else {
-                pass1.type = "password";
-                pass2.type = "password";
-            }
-        }
-    </script>
 </body>
 </html>
