@@ -11,19 +11,40 @@
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
         {% for item in items %}
-        <div style="background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid {% if item.item_type == 'LOST' %}var(--danger){% else %}var(--accent){% endif %}; padding: 20px; border-radius: 8px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid {% if item.item_type == 'LOST' %}var(--danger){% else %}var(--accent){% endif %}; padding: 20px; border-radius: 8px; display: flex; flex-direction: column;">
             
-            <span style="background: {% if item.item_type == 'LOST' %}rgba(239, 68, 68, 0.2){% else %}rgba(16, 185, 129, 0.2){% endif %}; color: {% if item.item_type == 'LOST' %}#fca5a5{% else %}#6ee7b7{% endif %}; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                {{ item.get_item_type_display }}
-            </span>
+            <div>
+                <span style="background: {% if item.item_type == 'LOST' %}rgba(239, 68, 68, 0.2){% else %}rgba(16, 185, 129, 0.2){% endif %}; color: {% if item.item_type == 'LOST' %}#fca5a5{% else %}#6ee7b7{% endif %}; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                    {{ item.get_item_type_display }}
+                </span>
+                
+                <h3 style="color: var(--text-main); margin: 15px 0 10px 0; font-size: 18px;">{{ item.title }}</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Reported by: <strong style="color: var(--text-main);">{{ item.created_by.username }}</strong></p>
+                <p style="color: var(--text-main); font-size: 14px; line-height: 1.5;">{{ item.description }}</p>
+                
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="Item Image" style="max-width: 100%; border-radius: 4px; margin-top: 15px; border: 1px solid var(--border);">
+                {% endif %}
+            </div>
+
+            <div style="margin-top: auto; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap;">
+                
+                {% if request.user == item.created_by %}
+                    <form method="POST" action="{% url 'resolve_item' item.id %}" style="margin: 0; flex: 1; min-width: 120px;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn" style="width: 100%; font-size: 12px; padding: 8px 10px; background: rgba(16, 185, 129, 0.1); color: var(--accent); border: 1px solid var(--accent); cursor: pointer;">✓ Mark as Found/Resolved</button>
+                    </form>
+                {% endif %}
+                
+                {% if request.user.is_staff %}
+                    <form method="POST" action="{% url 'delete_item' item.id %}" style="margin: 0; flex: 1; min-width: 120px;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn" style="width: 100%; font-size: 12px; padding: 8px 10px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); cursor: pointer;">🗑️ Remove Post</button>
+                    </form>
+                {% endif %}
+
+            </div>
             
-            <h3 style="color: var(--text-main); margin: 15px 0 10px 0; font-size: 18px;">{{ item.title }}</h3>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Reported by: {{ item.created_by.username }}</p>
-            <p style="color: var(--text-main); font-size: 14px; line-height: 1.5;">{{ item.description }}</p>
-            
-            {% if item.image %}
-                <img src="{{ item.image.url }}" alt="Item Image" style="max-width: 100%; border-radius: 4px; margin-top: 15px; border: 1px solid var(--border);">
-            {% endif %}
         </div>
         {% empty %}
         <p style="color: var(--text-muted); grid-column: 1 / -1;">No active lost or found items reported.</p>
