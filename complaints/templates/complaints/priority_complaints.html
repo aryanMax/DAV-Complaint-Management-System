@@ -1,0 +1,49 @@
+{% extends 'complaints/base.html' %}
+{% block title %}Priority Complaints{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="margin: 0; font-weight: 400; color: var(--danger);">🔥 Priority Complaints (Overdue by > 3 Days)</h2>
+</div>
+
+<div style="background: var(--bg-card); border-radius: 8px; border: 1px solid var(--danger); overflow: hidden; box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead style="background-color: var(--bg-deep); border-bottom: 1px solid var(--border);">
+            <tr>
+                <th style="padding: 16px; color: var(--text-muted); font-weight: 600;">Date Logged</th>
+                <th style="padding: 16px; color: var(--text-muted); font-weight: 600;">Student</th>
+                <th style="padding: 16px; color: var(--text-muted); font-weight: 600;">Issue Title</th>
+                <th style="padding: 16px; color: var(--text-muted); font-weight: 600;">Status</th>
+                <th style="padding: 16px; color: var(--text-muted); font-weight: 600; text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr style="border-bottom: 1px solid var(--border); transition: background 0.2s; background: rgba(239, 68, 68, 0.05);" onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.05)'">
+                
+                <td style="padding: 16px; color: var(--danger); font-size: 14px; font-weight: bold;">
+                    {{ complaint.created_at|date:"M d, Y" }}
+                </td>
+                <td style="padding: 16px; color: var(--accent); font-weight: bold;">{{ complaint.created_by.username }}</td>
+                <td style="padding: 16px; color: var(--text-main);">{{ complaint.title }}</td>
+                <td style="padding: 16px;"><span class="status" data-status="{{ complaint.status }}">{{ complaint.status }}</span></td>
+                <td style="padding: 16px; text-align: center;">
+                    <a href="{% url 'complaint_detail' complaint.id %}" style="background: var(--bg-deep); color: var(--text-main); border: 1px solid var(--border); padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; margin-right: 5px;">View</a>
+                    
+                    {% if request.user.is_staff %}
+                    <a href="{% url 'update_status' complaint.id %}" style="background: var(--danger); color: #fff; border: 1px solid var(--danger); padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px;">Resolve Now</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                    <span style="font-size: 24px; display: block; margin-bottom: 10px;">🎉</span>
+                    No priority complaints! Management has acted on everything within the 3-day SLA window.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
