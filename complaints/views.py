@@ -89,25 +89,21 @@ def all_complaints_view(request):
     complaints = Complaint.objects.all().order_by('-created_at')
     return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
 
-# === NEW PRIORITY VIEW ===
+# === UPDATED PRIORITY VIEW (ADMIN ONLY) ===
 @login_required
 def priority_complaints_view(request):
+    # Security Check: Only allow Admins
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view priority complaints.")
+
     # Calculate exactly 3 days ago from this exact moment
     three_days_ago = timezone.now() - timedelta(days=3)
 
-    if request.user.is_staff:
-        # Admins see all unresolved complaints older than 3 days
-        complaints = Complaint.objects.filter(
-            status__in=['PENDING', 'IN_PROGRESS'],
-            created_at__lte=three_days_ago
-        ).order_by('created_at') # ordered ascending (oldest first)
-    else:
-        # Students see their own unresolved complaints older than 3 days
-        complaints = Complaint.objects.filter(
-            created_by=request.user,
-            status__in=['PENDING', 'IN_PROGRESS'],
-            created_at__lte=three_days_ago
-        ).order_by('created_at')
+    # Admins see all unresolved complaints older than 3 days
+    complaints = Complaint.objects.filter(
+        status__in=['PENDING', 'IN_PROGRESS'],
+        created_at__lte=three_days_ago
+    ).order_by('created_at') # ordered ascending (oldest first)
 
     return render(request, 'complaints/priority_complaints.html', {'complaints': complaints})
 
@@ -169,31 +165,3 @@ def publish_notice_view(request):
     
     if request.method == 'POST':
         form = NoticeForm(request.POST)
-        if form.is_valid():
-            notice = form.save(commit=False)
-            notice.created_by = request.user
-            notice.save()
-            messages.success(request, "Notice published successfully!")
-            return redirect('notice_board')
-    else:
-        form = NoticeForm()
-    return render(request, 'complaints/publish_notice.html', {'form': form})
-
-@login_required
-def lost_and_found_view(request):
-    items = LostAndFoundItem.objects.filter(is_resolved=False).order_by('-created_at')
-    return render(request, 'complaints/lost_and_found.html', {'items': items})
-
-@login_required
-def report_item_view(request):
-    if request.method == 'POST':
-        form = LostAndFoundForm(request.POST, request.FILES)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.created_by = request.user
-            item.save()
-            messages.success(request, "Item reported successfully!")
-            return redirect('lost_and_found')
-    else:
-        form = LostAndFoundForm()
-    return render(request, 'complaints/report_item.html', {'form': form})
