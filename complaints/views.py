@@ -165,3 +165,43 @@ def publish_notice_view(request):
     
     if request.method == 'POST':
         form = NoticeForm(request.POST)
+@login_required
+def notice_board_view(request):
+    notices = Notice.objects.all().order_by('-created_at')
+    return render(request, 'complaints/notice_board.html', {'notices': notices})
+
+@login_required
+def publish_notice_view(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to publish notices.")
+    
+    if request.method == 'POST':
+        form = NoticeForm(request.POST)
+        if form.is_valid():
+            notice = form.save(commit=False)
+            notice.created_by = request.user
+            notice.save()
+            messages.success(request, "Notice published successfully!")
+            return redirect('notice_board')
+    else:
+        form = NoticeForm()
+    return render(request, 'complaints/publish_notice.html', {'form': form})
+
+@login_required
+def lost_and_found_view(request):
+    items = LostAndFoundItem.objects.filter(is_resolved=False).order_by('-created_at')
+    return render(request, 'complaints/lost_and_found.html', {'items': items})
+
+@login_required
+def report_item_view(request):
+    if request.method == 'POST':
+        form = LostAndFoundForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by = request.user
+            item.save()
+            messages.success(request, "Item reported successfully!")
+            return redirect('lost_and_found')
+    else:
+        form = LostAndFoundForm()
+    return render(request, 'complaints/report_item.html', {'form': form})
