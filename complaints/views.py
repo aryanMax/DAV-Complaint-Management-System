@@ -89,21 +89,16 @@ def all_complaints_view(request):
     complaints = Complaint.objects.all().order_by('-created_at')
     return render(request, 'complaints/all_complaints.html', {'complaints': complaints})
 
-# === UPDATED PRIORITY VIEW (ADMIN ONLY) ===
 @login_required
 def priority_complaints_view(request):
-    # Security Check: Only allow Admins
     if not request.user.is_staff:
         return HttpResponseForbidden("You are not authorized to view priority complaints.")
 
-    # Calculate exactly 3 days ago from this exact moment
     three_days_ago = timezone.now() - timedelta(days=3)
-
-    # Admins see all unresolved complaints older than 3 days
     complaints = Complaint.objects.filter(
         status__in=['PENDING', 'IN_PROGRESS'],
         created_at__lte=three_days_ago
-    ).order_by('created_at') # ordered ascending (oldest first)
+    ).order_by('created_at')
 
     return render(request, 'complaints/priority_complaints.html', {'complaints': complaints})
 
@@ -165,18 +160,6 @@ def publish_notice_view(request):
     
     if request.method == 'POST':
         form = NoticeForm(request.POST)
-@login_required
-def notice_board_view(request):
-    notices = Notice.objects.all().order_by('-created_at')
-    return render(request, 'complaints/notice_board.html', {'notices': notices})
-
-@login_required
-def publish_notice_view(request):
-    if not request.user.is_staff:
-        return HttpResponseForbidden("You are not authorized to publish notices.")
-    
-    if request.method == 'POST':
-        form = NoticeForm(request.POST)
         if form.is_valid():
             notice = form.save(commit=False)
             notice.created_by = request.user
@@ -205,3 +188,28 @@ def report_item_view(request):
     else:
         form = LostAndFoundForm()
     return render(request, 'complaints/report_item.html', {'form': form})
+
+# === NEW: LOST & FOUND ACTION VIEWS ===
+
+@login_required
+def resolve_item_view(request, item_id):
+    item = get_object_or_404(LostAndFoundItem, id=item_id)
+    # Security: Only the person who created the post can mark it as resolved
+    if request.user == item.created_by:
+        item.is_resolved = True
+        item.save()
+        messages.success(request, "Item marked as resolved (Owner/Item found)!")
+    else:
+        messages.error(request, "You are not authorized to update this item.")
+    return redirect('lost_and_found')
+
+@login_required
+def delete_item_view(request, item_id):
+    item = get_object_or_404(LostAndFoundItem, id=item_id)
+    # Security: Only Admins (staff) can forcibly remove posts
+    if request.user.is_staff:
+        item.delete()
+        messages.success(request, "Post removed successfully by Admin.")
+    else:
+        messages.error(request, "You are not authorized to delete this post.")
+    return redirect('lost_and_found')
