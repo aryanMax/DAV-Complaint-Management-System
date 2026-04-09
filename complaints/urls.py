@@ -10,7 +10,7 @@ urlpatterns = [
     path('create/', views.create_complaint_view, name='create_complaint'),
     path('my/', views.my_complaints_view, name='my_complaints'),
     path('all/', views.all_complaints_view, name='all_complaints'),
-    path('priority/', views.priority_complaints_view, name='priority_complaints'), # NEW PRIORITY ROUTE
+    path('priority/', views.priority_complaints_view, name='priority_complaints'),
     path('update/<int:complaint_id>/', views.update_status, name='update_status'),
     path('view/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),
     
@@ -24,4 +24,8 @@ urlpatterns = [
     path('publish-notice/', views.publish_notice_view, name='publish_notice'),
     path('lost-and-found/', views.lost_and_found_view, name='lost_and_found'),
     path('report-item/', views.report_item_view, name='report_item'),
+    
+    # === NEW: LOST & FOUND ACTIONS ===
+    path('resolve-item/<int:item_id>/', views.resolve_item_view, name='resolve_item'),
+    path('delete-item/<int:item_id>/', views.delete_item_view, name='delete_item'),
 ]
